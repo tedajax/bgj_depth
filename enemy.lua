@@ -77,8 +77,10 @@ function create_enemy()
         self.body:setY(self.position.y + 20)
 
         if self.target ~= nil then
-            local diffx = self.position.x - self.target.x - 100
             local diffy = self.position.y - self.target.y
+            local txscl = math.abs(diffy) / 400
+            local tx = self.target.x + (100 * txscl)
+            local diffx = self.position.x - tx
 
             if self.position.x > Game.camera.position.x - 64 and
                self.position.x < Game.camera.position.x + love.graphics.getWidth() + 256 then
@@ -112,11 +114,11 @@ function create_enemy()
 
     self.take_damage = function(self, amount)
         self.health = self.health - amount
-        Game.score = Game.score + 3
+        Game:add_score(3)
         Audio:play_sfx("enemy_hit")
         Game.camera:shake(0.2, 3)
         if self.health <= 0 then
-            Game.score = Game.score + 11
+            Game:add_score(11)
             self.destroy_flag = true
         end
     end
@@ -149,6 +151,8 @@ function create_enemy_manager(capacity)
     self.on_collision_begin = function(self, handle, other, coll)
         self.pool.objects[handle]:take_damage(1)
     end
+
+    self.clear = function(self) self.pool:clear() end
 
     return self
 end

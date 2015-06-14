@@ -96,5 +96,7 @@ function create_bomb_manager(capacity)
         self.pool.objects[handle].destroy_flag = true
     end
 
+    self.clear = function(self) self.pool:clear() end
+
     return self
 end

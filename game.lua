@@ -26,11 +26,49 @@ function create_game()
     self.camera = create_camera(0, 0)
 
     self.score = 0
+    self.high_score = 0
 
-    self.move_speed = 100
+    self.move_speed = 150
 
     self.init = function(self)
+        self:read_high_score()
         Audio:play_music("play")
+    end
+
+    self.read_high_score = function(self)
+        local file = love.filesystem.newFile("score.txt")
+        file:open("r")
+        if file:isOpen() then
+            local str = file:read(file:getSize())
+            self.high_score = tonumber(str)
+        else
+            self.high_score = 0
+        end
+    end
+
+    self.save_high_score = function(self)
+        local file = love.filesystem.newFile("score.txt")
+        file:open("w")
+        if file:isOpen() then
+            file:write(self.high_score)
+        end
+    end
+
+    self.reset = function(self)
+        if self.score > self.high_score then
+            self.high_score = self.score
+            self:save_high_score()
+        end
+        self.background:set_time(12, 0)
+        self.score = 0
+        self.camera:look_at(0, 0)
+        self.player:reset()
+        self.level:reset()
+        self.explosion_manager:clear()
+        self.enemy_manager:clear()
+        self.bullet_manager:clear()
+        self.bomb_manager:clear()
+        love.audio.rewind(Audio:get_music("play"))
     end
 
     self.update = function(self, dt)
@@ -42,13 +80,6 @@ function create_game()
         self.bomb_manager:update(dt)
         self.enemy_manager:update(dt)
         self.bullet_manager:update(dt)
-
-        if love.keyboard.isDown("a") then
-            Game.move_speed = 1000
-        else
-            Game.move_speed = 100
-        end
-
         self.camera:move(Game.move_speed * dt, 0)
     end
 
@@ -66,12 +97,24 @@ function create_game()
 
         -- Collision:debug_draw()
 
+        love.graphics.setColor(31, 31, 31)
+        love.graphics.printf("Experience the 'depths' of cruelty", -250, -220, 1000, "center", 0, 1, 1)
+        love.graphics.printf("Arrow keys to move...", -250, -180, 1000, "center", 0, 1, 1)
+        love.graphics.printf("Press 'Z' to drop bombs", -250, -140, 1000, "center", 0, 1, 1)
+
         self.camera:pop()
 
         self.player:render_health()
         love.graphics.setColor(255, 255, 255)
-        --love.graphics.print("Score: "..self.score, 5, 5)
         love.graphics.printf("Score: "..self.score, love.graphics.getWidth() - 505, 10, 500, "right", 0, 1, 1)
+        love.graphics.printf("High: "..self.high_score, love.graphics.getWidth() - 505, 40, 500, "right", 0, 1, 1)
+    end
+
+    self.add_score = function(self, amount)
+        self.score = self.score + amount
+        if self.score > self.high_score then
+            self.high_score = self.score
+        end
     end
 
     return self

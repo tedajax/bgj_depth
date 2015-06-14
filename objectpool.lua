@@ -46,6 +46,20 @@ function create_object_pool(create_func, capacity)
         self:push_index(obj.handle)
     end
 
+    self.clear = function(self)
+        self.objects = {}
+        self.free_indices = {}
+        self.create_func = create_func
+
+        for i = 1, capacity do
+            self.free_indices[i] = i
+            self.objects[i] = self.create_func()
+            self.objects[i].handle = i
+        end
+
+        self.free_head = self.capacity
+    end
+
     self.remove_flagged = function(self)
         for i = 1, self.capacity do
             if self.objects[i].active and self.objects[i].destroy_flag then

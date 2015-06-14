@@ -34,7 +34,7 @@ function create_audio()
     self.load_music = function(self, name, path)
         local music = love.audio.newSource(path, "stream")
         if music ~= nil then
-            music:setPosition(0, 0, -1)
+            music:setPosition(0, 0, -2)
             self.music[name] = music
         end
         return self.music[name]

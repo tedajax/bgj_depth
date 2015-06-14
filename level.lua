@@ -16,6 +16,7 @@ function create_level()
     self.bottom = 5
 
     self.init = function(self)
+        self.tiles:clear()
         for x = -10, 10 do
             for y = self.top, self.bottom do
                 local tx = x * self.tile_width
@@ -30,6 +31,13 @@ function create_level()
                 self.tiles:add(tx, ty, name)
             end
         end
+    end
+
+    self.reset = function(self)
+        self:init()
+        self.furthest_enemy = love.graphics.getWidth()
+        self.next_spawn = 0
+        self.right_edge = 0
     end
 
     self.update = function(self, dt)

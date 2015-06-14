@@ -79,10 +79,6 @@ function love.keypressed(key)
         love.event.quit()
     end
 
-    if key == "e" then
-        Game.explosion_manager:add(Game.camera.position.x + math.random(800), Game.camera.position.y + math.random(600), math.random() * 3 + 1)
-    end
-
     Input:on_key_down(key)
 end
 
