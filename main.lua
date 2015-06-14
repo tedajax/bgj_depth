@@ -39,6 +39,8 @@ function love.load()
     Audio:init()
     Audio:load_sfx("explosion_small", "assets/explosion_small.wav")
     Audio:load_sfx("explosion_big", "assets/explosion_big.wav")
+    Audio:load_sfx("enemy_fire", "assets/enemy_fire.wav")
+    Audio:load_sfx("player_hit", "assets/player_hit.wav")
 
     Timer = create_timer()
 

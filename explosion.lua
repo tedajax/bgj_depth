@@ -20,7 +20,8 @@ function create_explosion()
 
     self.activate = function(self, x, y, scale)
         if scale > 1.5 then
-            Audio:play_sfx("explosion_big")
+            local name = "explosion_big"--..math.random(1, 2)
+            Audio:play_sfx(name)
         else
             Audio:play_sfx("explosion_small")
         end

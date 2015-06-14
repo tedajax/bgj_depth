@@ -9,6 +9,8 @@ function create_player(x, y)
 
     self.controller = nil
 
+    self.is_dead = false
+
     self.image = Images:get_image("blimp")
     self.width = self.image:getWidth()
     self.height = self.image:getHeight()
@@ -66,10 +68,17 @@ function create_player(x, y)
     end
 
     self.on_collision_begin = function(self, other)
-        self.hit_timer = self.hit_time
-        self.color = self.hit_color
-        self.health = self.health - 1
-        if self.health <= 0 then self.health = 0 end
+        if self.health > 0 then
+            self.hit_timer = self.hit_time
+            self.color = self.hit_color
+            self.health = self.health - 1
+
+            Audio:play_sfx("player_hit")
+
+            if self.health <= 0 then
+                self.is_dead = true
+            end
+        end
     end
 
     return self
@@ -80,7 +89,7 @@ function create_player_controller(player)
 
     self.player = player
     self.player.controller = self
-    self.speed = 250
+    self.speed = 350
 
     self.fire_delay = 0.2
     self.fire_timer = 0
@@ -99,6 +108,10 @@ function create_player_controller(player)
 
         if self.player.position.x > Game.camera.position.x + (love.graphics.getWidth() - 72) then
             self.player.position.x = Game.camera.position.x + (love.graphics.getWidth() - 72)
+        end
+
+        if self.player.position.y < -220 then
+            self.player.position.y = -220
         end
 
         if Input:get_button("fire") then

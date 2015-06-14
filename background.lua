@@ -3,7 +3,7 @@ function create_background()
 
     self.day_hours = 24
     self.time = 0
-    self.time_scale = 240
+    self.time_scale = 960
     self.cSecondsToHour = 1 / 3600
 
     self.skybox_gradient = Images:get_image("daynight")
@@ -11,7 +11,7 @@ function create_background()
     self.skybox_quad = love.graphics.newQuad(0, 0,
                                              1, self.sky_height,
                                              self.sky_width, self.sky_height)
-    self.skybox_height_scale = love.graphics.getHeight() / self.sky_height
+    self.skybox_height_scale = (love.graphics.getHeight() - 75) / self.sky_height
     self.skybox_delay = 2
 
     self.color_image = Images:get_image("daynight_colors")

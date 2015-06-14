@@ -25,6 +25,8 @@ function create_game()
 
     self.camera = create_camera(0, 0)
 
+    self.score = 0
+
     self.move_speed = 100
 
     self.init = function(self)
@@ -68,6 +70,8 @@ function create_game()
         self.camera:pop()
 
         self.player:render_health()
+        love.graphics.setColor(255, 255, 255)
+        love.graphics.printf("Score: "..self.score, 200, 200, 1000, "right")
     end
 
     return self

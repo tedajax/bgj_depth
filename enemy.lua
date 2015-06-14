@@ -24,8 +24,8 @@ function create_enemy()
     self.max_health = 3
     self.health = 0
 
-    self.min_fire_delay = 0.25
-    self.max_fire_delay = 1.5
+    self.min_fire_delay = 0.5
+    self.max_fire_delay = 2
     self.fire_delay = 0
 
     self.activate = function(self, x, y)
@@ -47,12 +47,14 @@ function create_enemy()
     end
 
     self.on_release = function(self)
+        if self.health > 0 then return end
+
         local min_scale = 1.5
         local max_scale = 3
-        local minx = -32
-        local maxx = 32
-        local miny = -12
-        local maxy = 12
+        local minx = -48
+        local maxx = 48
+        local miny = -24
+        local maxy = 24
         local yoff = 24
         local s = math.random() * (max_scale - min_scale) + min_scale
         local x = self.position.x + math.random(minx, maxx)
@@ -60,12 +62,12 @@ function create_enemy()
         local px = self.position.x
         local py = self.position.y
         Game.explosion_manager:add(x, y, s)
-        Timer:add_periodic(0.25, function()
+        Timer:add_periodic(0.1, function()
             local es = math.random() * (max_scale - min_scale) + min_scale
             local ex = px + math.random(minx, maxx)
             local ey = py + yoff + math.random(miny, maxy)
             Game.explosion_manager:add(ex, ey, es)
-        end, math.random(3, 5))
+        end, math.random(3, 7))
     end
 
     self.update = function(self, dt)
@@ -73,11 +75,11 @@ function create_enemy()
         self.body:setY(self.position.y + 20)
 
         if self.target ~= nil then
-            local diffx = self.position.x - self.target.x
+            local diffx = self.position.x - self.target.x - 100
             local diffy = self.position.y - self.target.y
 
             if self.position.x > Game.camera.position.x - 64 and
-               self.position.x < Game.camera.position.x + love.graphics.getWidth() + 64 then
+               self.position.x < Game.camera.position.x + love.graphics.getWidth() + 256 then
                 local a = math.atan2(diffy, diffx)
                 a = math.deg(a) + 270
                 self.aim_angle = self.aim_angle + (a - self.aim_angle) * 0.1
@@ -88,10 +90,9 @@ function create_enemy()
                     local bx = math.cos(math.rad(self.aim_angle - 90)) * 48 + self.position.x + 0
                     local by = math.sin(math.rad(self.aim_angle - 90)) * 48 + self.position.y + 36
                     self.fire_delay = math.random(self.min_fire_delay, self.max_fire_delay)
+                    Audio:play_sfx("enemy_fire")
                     Game.bullet_manager:add(bx, by, self.aim_angle - 90)
                 end
-            else
-
             end
         end
 
@@ -109,7 +110,9 @@ function create_enemy()
 
     self.take_damage = function(self, amount)
         self.health = self.health - amount
+        Game.score = Game.score + 3
         if self.health <= 0 then
+            Game.score = Game.score + 11
             self.destroy_flag = true
         end
     end
