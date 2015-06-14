@@ -34,6 +34,7 @@ function create_bomb()
         self.body:setX(self.position.x)
         self.body:setY(self.position.y)
         self.fixture:setUserData(collision_create_tag("cBomb", self.handle))
+        -- Audio:play_sfx("bomb_drop")
     end
 
     self.release = function(self)

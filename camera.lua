@@ -2,6 +2,9 @@ function create_camera(x, y)
     local self = {}
 
     self.position = { x = x - love.graphics.getWidth() / 2, y = y - love.graphics.getHeight() / 2 }
+    self.shake_pos = { x = 0, y = 0 }
+    self.shake_time = 0
+    self.shake_magnitude = 0
     self.rotation = 0
     self.zoom = 1
 
@@ -37,9 +40,25 @@ function create_camera(x, y)
         self.zoom = zoom
     end
 
+    self.shake = function(self, time, mag)
+        self.shake_time = time or 1
+        self.shake_magnitude = mag or 1
+    end
+
+    self.update = function(self, dt)
+        if self.shake_time > 0 then
+            self.shake_time = self.shake_time - dt
+            self.shake_pos.x = math.random(-self.shake_magnitude, self.shake_magnitude)
+            self.shake_pos.y = math.random(-self.shake_magnitude, self.shake_magnitude)
+        else
+            self.shake_pos.x = 0
+            self.shake_pos.y = 0
+        end
+    end
+
     self.push = function(self)
         love.graphics.push()
-        love.graphics.translate(-self.position.x, -self.position.y)
+        love.graphics.translate(-(self.position.x + self.shake_pos.x), -(self.position.y + self.shake_pos.y))
         love.graphics.rotate(-math.rad(self.rotation))
         love.graphics.scale(1 / self.zoom, 1 / self.zoom)
     end

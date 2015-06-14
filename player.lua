@@ -1,15 +1,22 @@
+PlayerState = {
+    cAlive = 0,
+    cDead = 1,
+    cExploded = 2
+}
+
 function create_player(x, y)
     local self = {}
 
     self.position = {}
     self.position.x = x
     self.position.y = y
+    self.rotation = 0
 
     self.radius = 16
 
     self.controller = nil
 
-    self.is_dead = false
+    self.state = PlayerState.cAlive
 
     self.image = Images:get_image("blimp")
     self.width = self.image:getWidth()
@@ -35,7 +42,7 @@ function create_player(x, y)
     self.hit_timer = 0
     self.color = self.normal_color
 
-    self.max_health = 10
+    self.max_health = 1
     self.health = self.max_health
 
     self.update = function(self, dt)
@@ -56,7 +63,7 @@ function create_player(x, y)
 
     self.render = function(self)
         love.graphics.setColor(unpack(self.color))
-        love.graphics.draw(self.image, self.position.x, self.position.y, 0, 1, 1, self.ox, self.oy)
+        love.graphics.draw(self.image, self.position.x, self.position.y, math.rad(self.rotation), 1, 1, self.ox, self.oy)
     end
 
     self.render_health = function(self)
@@ -73,10 +80,12 @@ function create_player(x, y)
             self.color = self.hit_color
             self.health = self.health - 1
 
+            Game.camera:shake(0.2, 5)
+
             Audio:play_sfx("player_hit")
 
             if self.health <= 0 then
-                self.is_dead = true
+                self.state = PlayerState.cDead
             end
         end
     end
@@ -95,12 +104,45 @@ function create_player_controller(player)
     self.fire_timer = 0
 
     self.update = function(self, dt)
-        local h = Input:get_axis("horizontal")
-        local v = Input:get_axis("vertical")
+        if self.player.state == PlayerState.cAlive then
+            local h = Input:get_axis("horizontal")
+            local v = Input:get_axis("vertical")
 
-        self.player.position.x = self.player.position.x + Game.move_speed * dt
-        self.player.position.x = self.player.position.x + (h * self.speed * dt)
-        self.player.position.y = self.player.position.y + (v * self.speed * dt)
+            self.player.position.x = self.player.position.x + Game.move_speed * dt
+            self.player.position.x = self.player.position.x + (h * self.speed * dt)
+            self.player.position.y = self.player.position.y + (v * self.speed * dt)
+        elseif self.player.state == PlayerState.cDead then
+            self.player.rotation = 45
+            self.player.position.x = self.player.position.x + Game.move_speed * dt
+            self.player.position.y = self.player.position.y + 75 * dt
+            self.player.color = {255, 191, 63}
+
+            if self.player.position.y > 220 then
+                self.player.state = PlayerState.cExploded
+                local min_scale = 1.5
+                local max_scale = 5
+                local minx = -48
+                local maxx = 48
+                local miny = -48
+                local maxy = 48
+                local yoff = 0
+                local s = math.random() * (max_scale - min_scale) + min_scale
+                local x = self.player.position.x + math.random(minx, maxx)
+                local y = self.player.position.y + yoff + math.random(miny, maxy)
+                local px = self.player.position.x
+                local py = self.player.position.y
+                Game.explosion_manager:add(x, y, s)
+                Game.camera:shake(0.1, 5)
+                Timer:add_periodic(0.33, function()
+                    local es = math.random() * (max_scale - min_scale) + min_scale
+                    local ex = px + math.random(minx, maxx)
+                    local ey = py + yoff + math.random(miny, maxy)
+                    Game.explosion_manager:add(ex, ey, es)
+                    Game.camera:shake(0.1, 5)
+                end, math.random(3, 7))
+            end
+        else
+        end
 
         if self.player.position.x < Game.camera.position.x + 64 then
             self.player.position.x = Game.camera.position.x + 64

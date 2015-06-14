@@ -62,11 +62,13 @@ function create_enemy()
         local px = self.position.x
         local py = self.position.y
         Game.explosion_manager:add(x, y, s)
+        Game.camera:shake(0.1, 5)
         Timer:add_periodic(0.1, function()
             local es = math.random() * (max_scale - min_scale) + min_scale
             local ex = px + math.random(minx, maxx)
             local ey = py + yoff + math.random(miny, maxy)
             Game.explosion_manager:add(ex, ey, es)
+            Game.camera:shake(0.1, 5)
         end, math.random(3, 7))
     end
 
@@ -111,6 +113,8 @@ function create_enemy()
     self.take_damage = function(self, amount)
         self.health = self.health - amount
         Game.score = Game.score + 3
+        Audio:play_sfx("enemy_hit")
+        Game.camera:shake(0.2, 3)
         if self.health <= 0 then
             Game.score = Game.score + 11
             self.destroy_flag = true

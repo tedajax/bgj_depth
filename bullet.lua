@@ -34,6 +34,10 @@ function create_bullet()
         self.fixture:setUserData(collision_create_tag("cEnemyBullet", self.handle))
     end
 
+    self.on_release = function(self)
+        Game.explosion_manager:add(self.position.x, self.position.y, 0.75)
+    end
+
     self.release = function(self)
         self.body:setActive(false)
     end

@@ -7,7 +7,7 @@ function create_audio()
     self.max_sources_per_sfx = 8
 
     self.init = function(self)
-        love.audio.setPosition(0, 0, 1)
+        love.audio.setPosition(0, 0, 0)
     end
 
     self.get_sfx = function(self, name)
@@ -21,7 +21,7 @@ function create_audio()
     self.load_sfx = function(self, name, path)
         local sound = love.audio.newSource(path, "static")
         if sound ~= nil then
-            sound:setPosition(0, 0, 0)
+            sound:setPosition(0, 0, -2)
             self.sounds[name] = {}
             table.insert(self.sounds[name], sound)
             for i = 2, self.max_sources_per_sfx do
@@ -31,6 +31,15 @@ function create_audio()
         return self.sounds[name]
     end
 
+    self.load_music = function(self, name, path)
+        local music = love.audio.newSource(path, "stream")
+        if music ~= nil then
+            music:setPosition(0, 0, -1)
+            self.music[name] = music
+        end
+        return self.music[name]
+    end
+
     self.play_sfx = function(self, name)
         for _, s in ipairs(self.sounds[name]) do
             if not s:isPlaying() then
@@ -38,6 +47,10 @@ function create_audio()
                 break
             end
         end
+    end
+
+    self.play_music = function(self, name)
+        love.audio.play(self.music[name])
     end
 
     return self

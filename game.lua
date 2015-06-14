@@ -30,9 +30,11 @@ function create_game()
     self.move_speed = 100
 
     self.init = function(self)
+        Audio:play_music("play")
     end
 
     self.update = function(self, dt)
+        self.camera:update(dt)
         self.background:update(dt)
         self.level:update(dt)
         self.player:update(dt)
@@ -48,9 +50,6 @@ function create_game()
         end
 
         self.camera:move(Game.move_speed * dt, 0)
-
-        -- self.camera:zoom_in(0.1 * dt)
-        -- self.camera:rotate(10 * dt)
     end
 
     self.render = function(self)
@@ -65,13 +64,14 @@ function create_game()
         self.bullet_manager:render()
         self.explosion_manager:render()
 
-        Collision:debug_draw()
+        -- Collision:debug_draw()
 
         self.camera:pop()
 
         self.player:render_health()
         love.graphics.setColor(255, 255, 255)
-        love.graphics.printf("Score: "..self.score, 200, 200, 1000, "right")
+        --love.graphics.print("Score: "..self.score, 5, 5)
+        love.graphics.printf("Score: "..self.score, love.graphics.getWidth() - 505, 10, 500, "right", 0, 1, 1)
     end
 
     return self

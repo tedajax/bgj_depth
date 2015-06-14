@@ -41,12 +41,19 @@ function love.load()
     Audio:load_sfx("explosion_big", "assets/explosion_big.wav")
     Audio:load_sfx("enemy_fire", "assets/enemy_fire.wav")
     Audio:load_sfx("player_hit", "assets/player_hit.wav")
+    Audio:load_sfx("enemy_hit", "assets/enemy_hit.wav")
+    Audio:load_sfx("bomb_drop", "assets/bomb_drop.wav")
+
+    Audio:load_music("play", "assets/play_music.ogg")
 
     Timer = create_timer()
 
     Collision = create_collision()
     Game = create_game()
     Game:init()
+
+    Font = love.graphics.newFont("assets/prstartk.ttf", 24)
+    love.graphics.setFont(Font)
 
     love.graphics.setBackgroundColor(100, 149, 237)
 end
@@ -63,8 +70,8 @@ function love.draw(dt)
 
     local fps = love.timer.getFPS()
     love.graphics.setColor(0, 255, 0)
-    love.graphics.print("FPS: "..fps, 5, 5)
-    love.graphics.print("Time: "..Game.background:get_time_string(), 5, 25)
+    -- love.graphics.print("FPS: "..fps, 5, 5)
+    -- love.graphics.print("Time: "..Game.background:get_time_string(), 5, 25)
 end
 
 function love.keypressed(key)
