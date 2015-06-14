@@ -5,6 +5,7 @@ require 'images'
 require 'bomb'
 require 'collision'
 require 'timer'
+require 'audio'
 
 function love.load()
     Input = create_input()
@@ -33,6 +34,11 @@ function love.load()
     Images:load_image("bg1", "assets/bg1.png")
     Images:load_image("bg2", "assets/bg2.png")
     Images:load_image("explosion", "assets/explosion.png")
+
+    Audio = create_audio()
+    Audio:init()
+    Audio:load_sfx("explosion_small", "assets/explosion_small.wav")
+    Audio:load_sfx("explosion_big", "assets/explosion_big.wav")
 
     Timer = create_timer()
 

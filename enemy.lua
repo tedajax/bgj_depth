@@ -47,7 +47,7 @@ function create_enemy()
     end
 
     self.on_release = function(self)
-        local min_scale = 1
+        local min_scale = 1.5
         local max_scale = 3
         local minx = -32
         local maxx = 32
@@ -61,12 +61,11 @@ function create_enemy()
         local py = self.position.y
         Game.explosion_manager:add(x, y, s)
         Timer:add_periodic(0.25, function()
-            print("explode!")
             local es = math.random() * (max_scale - min_scale) + min_scale
             local ex = px + math.random(minx, maxx)
             local ey = py + yoff + math.random(miny, maxy)
             Game.explosion_manager:add(ex, ey, es)
-        end, math.random(2, 5))
+        end, math.random(3, 5))
     end
 
     self.update = function(self, dt)

@@ -19,6 +19,11 @@ function create_explosion()
     self.scale = 1
 
     self.activate = function(self, x, y, scale)
+        if scale > 1.5 then
+            Audio:play_sfx("explosion_big")
+        else
+            Audio:play_sfx("explosion_small")
+        end
         self.frame = 0
         self.frame_timer = self.frame_delay
         self.position.x = x
