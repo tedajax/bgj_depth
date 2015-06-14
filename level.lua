@@ -61,7 +61,7 @@ function create_level()
 
     self.spawn_enemy = function(self, x)
         self.next_spawn = math.random(128, 512)
-        Game.enemy_manager:add(x, 160)
+        Game.enemy_manager:add(x, 178)
         if x > self.furthest_enemy then
             self.furthest_enemy = x
         end

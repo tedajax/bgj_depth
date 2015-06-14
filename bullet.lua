@@ -9,7 +9,7 @@ function create_bullet()
 
     self.position = { x = 0, y = 0 }
     self.angle = 0
-    self.speed = 1000
+    self.speed = 600
 
     self.image = Images:get_image("bullet")
     self.width = self.image:getWidth()

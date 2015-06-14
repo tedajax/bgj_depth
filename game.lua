@@ -66,6 +66,8 @@ function create_game()
         Collision:debug_draw()
 
         self.camera:pop()
+
+        self.player:render_health()
     end
 
     return self

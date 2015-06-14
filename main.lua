@@ -4,6 +4,7 @@ require 'input'
 require 'images'
 require 'bomb'
 require 'collision'
+require 'timer'
 
 function love.load()
     Input = create_input()
@@ -33,6 +34,8 @@ function love.load()
     Images:load_image("bg2", "assets/bg2.png")
     Images:load_image("explosion", "assets/explosion.png")
 
+    Timer = create_timer()
+
     Collision = create_collision()
     Game = create_game()
     Game:init()
@@ -42,6 +45,7 @@ end
 
 function love.update(dt)
     Collision:update(dt)
+    Timer:update(dt)
     Game:update(dt)
     Input:update()
 end

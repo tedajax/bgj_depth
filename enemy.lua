@@ -17,15 +17,15 @@ function create_enemy()
     self.body = love.physics.newBody(Collision.world, self.position.x, self.position.y, "kinematic")
     self.body:setMass(1)
     self.body:setActive(false)
-    self.shape = love.physics.newRectangleShape(64, 24)
+    self.shape = love.physics.newRectangleShape(0, 12, 96, 30)
     self.fixture = love.physics.newFixture(self.body, self.shape)
     self.fixture:setFilterData(collision_tag_filter_data("cEnemy"))
 
     self.max_health = 3
     self.health = 0
 
-    self.min_fire_delay = 0.5
-    self.max_fire_delay = 3
+    self.min_fire_delay = 0.25
+    self.max_fire_delay = 1.5
     self.fire_delay = 0
 
     self.activate = function(self, x, y)
@@ -47,16 +47,29 @@ function create_enemy()
     end
 
     self.on_release = function(self)
-        for i = 1, math.random(1, 3) do
-            local s = math.random() * (3 - 1) + 1
-            local x = self.position.x + math.random(-32, 32)
-            local y = self.position.y + 24 + math.random(-12, 12)
-            Game.explosion_manager:add(x, y, s)
-        end
+        local min_scale = 1
+        local max_scale = 3
+        local minx = -32
+        local maxx = 32
+        local miny = -12
+        local maxy = 12
+        local yoff = 24
+        local s = math.random() * (max_scale - min_scale) + min_scale
+        local x = self.position.x + math.random(minx, maxx)
+        local y = self.position.y + yoff + math.random(miny, maxy)
+        local px = self.position.x
+        local py = self.position.y
+        Game.explosion_manager:add(x, y, s)
+        Timer:add_periodic(0.25, function()
+            print("explode!")
+            local es = math.random() * (max_scale - min_scale) + min_scale
+            local ex = px + math.random(minx, maxx)
+            local ey = py + yoff + math.random(miny, maxy)
+            Game.explosion_manager:add(ex, ey, es)
+        end, math.random(2, 5))
     end
 
     self.update = function(self, dt)
-        print(self.aim_angle)
         self.body:setX(self.position.x)
         self.body:setY(self.position.y + 20)
 
@@ -73,8 +86,8 @@ function create_enemy()
                 if self.fire_delay > 0 then
                     self.fire_delay = self.fire_delay - dt
                 else
-                    local bx = math.cos(math.rad(self.aim_angle - 90)) * 32 + self.position.x
-                    local by = math.sin(math.rad(self.aim_angle - 90)) * 32 + self.position.y + 20
+                    local bx = math.cos(math.rad(self.aim_angle - 90)) * 48 + self.position.x + 0
+                    local by = math.sin(math.rad(self.aim_angle - 90)) * 48 + self.position.y + 36
                     self.fire_delay = math.random(self.min_fire_delay, self.max_fire_delay)
                     Game.bullet_manager:add(bx, by, self.aim_angle - 90)
                 end
@@ -91,8 +104,8 @@ function create_enemy()
     self.render = function(self)
         love.graphics.setColor(255, 255, 255)
 
-        love.graphics.draw(self.gun_image, self.position.x, self.position.y + 30, math.rad(self.aim_angle), 1, 1, 32, 64)
-        love.graphics.draw(self.base_image, self.position.x, self.position.y, 0, 1, 1, 32, 32)
+        love.graphics.draw(self.gun_image, self.position.x, self.position.y + 44, math.rad(self.aim_angle), 1, 1, 48, 96)
+        love.graphics.draw(self.base_image, self.position.x, self.position.y, 0, 1, 1, 48, 48)
     end
 
     self.take_damage = function(self, amount)

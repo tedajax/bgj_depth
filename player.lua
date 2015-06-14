@@ -33,6 +33,9 @@ function create_player(x, y)
     self.hit_timer = 0
     self.color = self.normal_color
 
+    self.max_health = 10
+    self.health = self.max_health
+
     self.update = function(self, dt)
         if self.controller ~= nil then
             self.controller:update(dt)
@@ -54,9 +57,19 @@ function create_player(x, y)
         love.graphics.draw(self.image, self.position.x, self.position.y, 0, 1, 1, self.ox, self.oy)
     end
 
+    self.render_health = function(self)
+        love.graphics.setColor(255, 255, 255)
+        love.graphics.rectangle("fill", 5, 5, 202, 17)
+
+        love.graphics.setColor(255, 0, 0)
+        love.graphics.rectangle("fill", 6, 6, (self.health / self.max_health) * 200, 15)
+    end
+
     self.on_collision_begin = function(self, other)
         self.hit_timer = self.hit_time
         self.color = self.hit_color
+        self.health = self.health - 1
+        if self.health <= 0 then self.health = 0 end
     end
 
     return self
@@ -80,6 +93,14 @@ function create_player_controller(player)
         self.player.position.x = self.player.position.x + (h * self.speed * dt)
         self.player.position.y = self.player.position.y + (v * self.speed * dt)
 
+        if self.player.position.x < Game.camera.position.x + 64 then
+            self.player.position.x = Game.camera.position.x + 64
+        end
+
+        if self.player.position.x > Game.camera.position.x + (love.graphics.getWidth() - 72) then
+            self.player.position.x = Game.camera.position.x + (love.graphics.getWidth() - 72)
+        end
+
         if Input:get_button("fire") then
             self.fire_timer = self.fire_timer - dt
             if self.fire_timer <= 0 then
@@ -88,6 +109,8 @@ function create_player_controller(player)
                 Game.bomb_manager:add(self.player.position.x, self.player.position.y + 20, bvx)
                 self.fire_timer = self.fire_delay
             end
+        else
+            self.fire_timer = 0
         end
     end
 
