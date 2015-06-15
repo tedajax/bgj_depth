@@ -27,6 +27,7 @@ function create_game()
 
     self.score = 0
     self.high_score = 0
+    self.prev_high_score = 0
 
     self.move_speed = 150
 
@@ -36,28 +37,23 @@ function create_game()
     end
 
     self.read_high_score = function(self)
-        local file = love.filesystem.newFile("score.txt")
-        file:open("r")
-        if file:isOpen() then
-            local str = file:read(file:getSize())
+        local str = love.filesystem.read("score.txt")
+        if str ~= nil then
             self.high_score = tonumber(str)
         else
             self.high_score = 0
         end
+        self.prev_high_score = self.high_score
     end
 
     self.save_high_score = function(self)
-        local file = love.filesystem.newFile("score.txt")
-        file:open("w")
-        if file:isOpen() then
-            file:write(self.high_score)
-        end
+        love.filesystem.write("score.txt", tostring(self.high_score))
     end
 
     self.reset = function(self)
-        if self.score > self.high_score then
-            self.high_score = self.score
+        if self.high_score > self.prev_high_score then
             self:save_high_score()
+            self.prev_high_score = self.high_score
         end
         self.background:set_time(12, 0)
         self.score = 0

@@ -52,6 +52,8 @@ function love.load()
     Game = create_game()
     Game:init()
 
+    love.filesystem.setIdentity("NuclearBlimp")
+
     Font = love.graphics.newFont("assets/prstartk.ttf", 24)
     love.graphics.setFont(Font)
 
